@@ -128,6 +128,11 @@ applied planning scenario. If the developer's need is "decide what to do," not j
 - **Symbolic matching is exact.** Tokens match or they don't — no semantic similarity
   between `"SPEED|HIGH"` and `"velocity_fast"`. Keep preprocessing consistent between
   learning and prediction (vectors, by contrast, match by proximity).
+- **The engine models order, not elapsed time.** "A then B, 50 ms apart" and "A then B,
+  six hours apart" are the same sequence. When elapsed time carries signal, encode it as
+  symbols — bucket the gap and observe it as an event token (`"GAP|SHORT"`,
+  `"GAP|OVERNIGHT"`). Time-dependence that isn't encoded this way is invisible to the
+  model.
 - **Emotives operate at the layer where they're observed** — they don't currently
   propagate up through abstraction layers.
 - **Isolation is architectural.** Clients of one node share its memory; multi-tenant

@@ -58,7 +58,9 @@ Two disciplines that prevent the classic silent failures:
 
 - **Order and hygiene**: observe features, then the label last; call `learn()` *before*
   clearing working memory; clear between sequences. Getting this wrong doesn't error —
-  it silently learns nothing.
+  it silently learns nothing. And working memory is unbounded by default: a long-running
+  process that observes continuously without learning or clearing accumulates
+  indefinitely, so build the learn-or-clear cadence into the integration.
 - **Format stability**: the representation at prediction time must match training —
   same token vocabulary, same vector dimensionality. Version your preprocessing.
 
@@ -90,7 +92,16 @@ couple of weeks, iterating against prediction quality.
   KB restored in about a minute — dominated by container startup, not KB volume.
 - **Isolation**: one node = one shared memory space. Separate tenants/experiments by
   node or by instance, and design that in from the start.
+- **Latency**: end-to-end over HTTP, retrieving predictions is cheap — single-digit to
+  tens of milliseconds. `observe` is the dominant cost, and it grows with KB size
+  (sublinearly): single-digit milliseconds on small KBs, ~0.6 s per event on a real
+  ~19,000-model node — roughly 1–2 observations/second per node single-threaded, which
+  is the number to design throughput against. Cost is flat in event width and in
+  working-memory depth, so long sequences are not a latency problem. The engine is
+  CPU-bound and degrades sharply when the host is saturated — don't co-locate heavy
+  batch work with latency-sensitive inference. (Single-run, order-of-magnitude
+  figures.)
 - **Scale**: the engine has sustained multi-million-call production workloads. Very
-  large knowledge bases make full KB export slow, and prediction latency grows with KB
-  size and search depth — high-entropy token design (the fingerprint failure) is what
-  actually blows up KB size, so data shaping is also the capacity plan.
+  large knowledge bases make full KB export slow, and per-observe cost grows with KB
+  size — high-entropy token design (the fingerprint failure) is what actually blows up
+  KB size, so data shaping is also the capacity plan.
