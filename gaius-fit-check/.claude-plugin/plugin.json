@@ -1,0 +1,9 @@
+{
+  "name": "gaius-fit-check",
+  "description": "Assess whether the GAIuS cognitive engine fits your project: explores your codebase, interviews you one question at a time, and delivers an honest verdict with a ready-to-send outreach draft.",
+  "version": "1.0.0",
+  "author": {
+    "name": "gaius"
+  },
+  "homepage": "https://www.gaius.fyi"
+}
