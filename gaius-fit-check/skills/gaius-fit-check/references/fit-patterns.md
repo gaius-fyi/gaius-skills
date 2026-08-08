@@ -84,7 +84,7 @@ Predictions decompose by construction: which stored patterns fired, which observ
 signals matched, what was expected but missing. If a regulator, analyst, or customer has
 to trust the output, the explanation is the mechanism itself, not a post-hoc
 approximation bolted onto a black box. And because knowledge lives in discrete, editable
-models, you can inspect, correct, or **delete any specific learned pattern on demand** —
+patterns, you can inspect, correct, or **delete any specific learned pattern on demand** —
 data governance and error correction without retraining anything.
 
 ### 6. Continuous learning in production

@@ -84,7 +84,7 @@ couple of weeks, iterating against prediction quality.
 
 - **Knowledge persistence**: the KB supports export/import to file; snapshot before
   destructive operations. Knowledge bases are compact and fast to move: a real corpus
-  of ~19,000 learned models exports to ~25 MB of JSON in about 2 seconds and restores
+  of ~19,000 learned patterns exports to ~25 MB of JSON in about 2 seconds and restores
   in about 4, end-to-end over HTTP on laptop-class hardware (single-run,
   order-of-magnitude figures). Clearing all memory on a node affects every client of
   that node — treat it like dropping a database table.
@@ -95,7 +95,7 @@ couple of weeks, iterating against prediction quality.
 - **Latency**: end-to-end over HTTP, retrieving predictions is cheap — single-digit to
   tens of milliseconds. `observe` is the dominant cost, and it grows with KB size
   (sublinearly): single-digit milliseconds on small KBs, ~0.6 s per event on a real
-  ~19,000-model node — roughly 1–2 observations/second per node single-threaded, which
+  ~19,000-pattern node — roughly 1–2 observations/second per node single-threaded, which
   is the number to design throughput against. Cost is flat in event width and in
   working-memory depth, so long sequences are not a latency problem. The engine is
   CPU-bound and degrades sharply when the host is saturated — don't co-locate heavy

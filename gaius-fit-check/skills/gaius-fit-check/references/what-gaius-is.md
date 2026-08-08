@@ -12,7 +12,7 @@ Three operations, called through a Python SDK or REST API:
 1. **Observe** — feed the engine one event at a time. Events accumulate in **working
    memory (WM)** in the order observed.
 2. **Learn** — commit the sequence currently in working memory to the **knowledge base
-   (KB)** as a stored model. One call, immediate; the pattern is usable on the very next
+   (KB)** as a stored pattern. One call, immediate; the pattern is usable on the very next
    prediction. There is no retraining cycle — learning one new pattern does not touch the
    others.
 3. **Predict** — given the events currently in working memory, the engine matches them
@@ -65,18 +65,18 @@ Predictions are structured objects, not opaque scores:
 - Scoring metadata — `confidence`, `frequency` (how often this pattern has been seen),
   and several other ranking metrics.
 
-Every prediction traces back to specific stored models. You can fetch any learned model
-and read exactly what sequence produced it — the explanation is the mechanism, not a
+Every prediction traces back to specific stored patterns. You can fetch any learned
+pattern and read exactly what sequence produced it — the explanation is the mechanism, not a
 post-hoc approximation.
 
 ## The knowledge base is editable
 
-Because knowledge is stored as discrete models rather than distributed weights, the KB
+Because knowledge is stored as discrete patterns rather than distributed weights, the KB
 supports surgical operations no gradient-trained model can offer:
 
-- Inspect any model; search models by the symbols they contain.
-- Delete one bad model without touching anything else and without retraining.
-- Correct or inject models programmatically.
+- Inspect any pattern; search patterns by the symbols they contain.
+- Delete one bad pattern without touching anything else and without retraining.
+- Correct or inject patterns programmatically.
 - Blacklist noisy symbols so they never enter working memory again.
 - Export the entire KB to a file and restore it elsewhere.
 
