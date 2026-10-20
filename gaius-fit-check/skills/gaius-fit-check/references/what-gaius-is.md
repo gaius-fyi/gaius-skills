@@ -29,9 +29,11 @@ Every observed event is a small JSON structure with four channels:
   discrete states — e.g. `"SPEED|HIGH"`, `"ACTIVITY|WALKING"`). The primary channel for
   event and categorical data; the engine generalizes by finding tokens that repeat
   across experiences.
-- `vectors` — numeric feature lists, matched by proximity: each vector is represented by
-  the stored vectors nearest to it, so nearby vectors share those and partially match.
-  It never averages vectors into class prototypes. The primary channel for numeric data — the engine's benchmark-winning
+- `vectors` — numeric feature lists, matched by proximity: by default each vector is
+  represented by the stored vectors nearest to it, so nearby vectors share those and
+  partially match. The engine does not build per-class averages or prototypes (an
+  optional hyperclustering mode, off by default, can replace stored vectors with
+  clusters). The primary channel for numeric data — the engine's benchmark-winning
   classification results run on vectors (see fit-patterns.md).
 - `emotives` — named scalar signals (utility, risk, cost) attached to the event. They
   mix into predictions, which enables utility-weighted prediction and recommendation-style
