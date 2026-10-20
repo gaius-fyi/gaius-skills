@@ -53,7 +53,8 @@ Workflows, protocol progressions, user journeys, alarm cascades, attack-stage se
 anywhere events arrive in meaningful order and "what typically comes next?" changes what
 your system does. This is the engine's home turf and its strongest shipped pattern: in a
 production integration, a layered topology learned multi-step stage progressions and
-predicted the next stage of in-progress sequences with maximum confidence after seeing
+predicted the next stage of in-progress sequences on complete matches (confidence 1.0:
+every expected signal present) after seeing
 each pattern only a handful of times — and every prediction itemized which signals
 matched and what was expected next.
 
@@ -74,7 +75,9 @@ gets handed the end of a story and has to work out the beginning, this is the fi
 ### 4. Classification — numeric or symbolic features
 
 Feature-event → label-event, learn, predict. The HAR result above is this
-pattern on numeric sensor vectors; a shipped image-digit demo does it on pixel vectors;
+pattern on numeric sensor vectors; a shipped image-digit demo does it on pixel vectors
+(96.7%, 348 of 360 held-out handwritten digits, learned from 1,437 examples, each stored
+as its own pattern and matched individually rather than averaged into class shapes);
 production integrations do it on symbolic event tokens. Works from the first labeled
 example, improves with each one, never needs a retrain to incorporate the next.
 
@@ -104,7 +107,8 @@ most alternatives.
 ### 8. Utility-weighted prediction and recommendations
 
 Emotives attach scalar signals (utility, risk, cost) to events, and predictions carry
-them — so you can rank candidate futures by expected value, not just likelihood. The
+them — so you can rank candidate futures by expected value, not just by how well they
+match. The
 prediction's `missing` field (expected-but-not-present) drives shipped
 recommendation-style use cases: "people in this pattern usually also have X."
 
