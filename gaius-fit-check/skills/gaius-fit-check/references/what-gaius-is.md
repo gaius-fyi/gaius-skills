@@ -16,7 +16,7 @@ Three operations, called through a Python SDK or REST API:
    prediction. There is no retraining cycle — learning one new pattern does not touch the
    others.
 3. **Predict** — given the events currently in working memory, the engine matches them
-   against stored models and returns ranked predictions. Every learned pattern reads in
+   against stored patterns and returns ranked predictions. Every learned pattern reads in
    both directions: **forward** to what comes next, and **backward** to what led here —
    no separate reverse model, nothing trained backward. Reveal any part of a process and
    the engine reconstructs the rest either way.
@@ -29,8 +29,9 @@ Every observed event is a small JSON structure with four channels:
   discrete states — e.g. `"SPEED|HIGH"`, `"ACTIVITY|WALKING"`). The primary channel for
   event and categorical data; the engine generalizes by finding tokens that repeat
   across experiences.
-- `vectors` — numeric feature lists, matched geometrically (nearby vectors partially
-  match). The primary channel for numeric data — the engine's benchmark-winning
+- `vectors` — numeric feature lists, matched by proximity: each vector is represented by
+  the stored vectors nearest to it, so nearby vectors share those and partially match.
+  It never averages vectors into class prototypes. The primary channel for numeric data — the engine's benchmark-winning
   classification results run on vectors (see fit-patterns.md).
 - `emotives` — named scalar signals (utility, risk, cost) attached to the event. They
   mix into predictions, which enables utility-weighted prediction and recommendation-style
@@ -59,11 +60,20 @@ Predictions are structured objects, not opaque scores:
 - `past` — what the engine infers led up to the observed events. Given only a middle or
   end fragment, this reconstructs the earlier steps you never saw — same learned pattern,
   opposite direction, no reverse training involved.
-- `matches` — which observed tokens matched the stored model.
-- `missing` — tokens the model expected that were not observed.
-- `extras` — observed tokens the model did not expect.
-- Scoring metadata — `confidence`, `frequency` (how often this pattern has been seen),
-  and several other ranking metrics.
+- `matches` — which observed tokens matched the stored pattern.
+- `missing` — tokens the pattern expected that were not observed.
+- `extras` — observed tokens the pattern did not expect.
+- `confidence` — match completeness: how much of the matched pattern the observed events
+  contain (0–1). It is not a probability of being right.
+- `potential` — the ranking score. Predictions come back ordered by it, highest first. It
+  combines how much of the pattern matched, how cleanly, and how distinctive the pattern
+  is. It has no fixed scale and is not a probability of being right.
+- `frequency` — how many times this exact pattern has been learned.
+- Several other metrics ride along with each prediction.
+
+Describe these fields only as defined here. Never call `confidence` or `potential`
+certainty, calibration, or the likelihood of being correct: whether confidence tracks
+accuracy has not been characterized yet.
 
 Every prediction traces back to specific stored patterns. You can fetch any learned
 pattern and read exactly what sequence produced it — the explanation is the mechanism, not a
@@ -89,7 +99,7 @@ and for bootstrapping (ship a curated KB with your product).
 Behavior is controlled by runtime parameters ("genes") you can change live, per node,
 without restarting or retraining. The two you'll touch most:
 
-- `recall_threshold` — how similar working memory must be to a stored model before it
+- `recall_threshold` — how similar working memory must be to a stored pattern before it
   fires a prediction. Low = many lenient predictions; high = few strict ones.
 - `max_predictions` — how many ranked candidates to return.
 
@@ -132,7 +142,7 @@ applied planning scenario. If the developer's need is "decide what to do," not j
   six hours apart" are the same sequence. When elapsed time carries signal, encode it as
   symbols — bucket the gap and observe it as an event token (`"GAP|SHORT"`,
   `"GAP|OVERNIGHT"`). Time-dependence that isn't encoded this way is invisible to the
-  model.
+  engine.
 - **Emotives operate at the layer where they're observed** — they don't currently
   propagate up through abstraction layers.
 - **Isolation is architectural.** Clients of one node share its memory; multi-tenant

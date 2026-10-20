@@ -73,12 +73,16 @@ couple of weeks, iterating against prediction quality.
 
 - The SDK ships **PVT (Performance Validation Testing)**, a harness for systematic
   evaluation across classification and utility-prediction test types.
-- Prediction internals are the debugging tool: a large `missing` list means your match
-  threshold is too strict for the data; predictions collapsing to one label means the
+- Prediction internals are the debugging tool: a large `missing` list means a prediction
+  fired on a partial match. That is normal for vector data (in the shipped digit demo,
+  correct calls often share only 1 of 4 vector features with the matched pattern), but if
+  partial matches are noise for your data, raise `recall_threshold` (higher = stricter,
+  fewer and more complete matches); predictions collapsing to one label means the
   data shaping is producing nearly-unique fingerprints (fix the data, not the knobs).
-- Eleven step-by-step tutorial notebooks ship with the product, from hello-world through
-  sequences, topologies, emotives, classification, utility prediction, recommendations,
-  and vision — they double as executable documentation of every pattern in these files.
+- Nineteen step-by-step tutorial notebooks ship with the product: eleven on the core
+  engine, from hello-world through sequences, topologies, emotives, classification,
+  utility prediction, recommendations, and vision, then eight on ThinkFlux and planning.
+  They double as executable documentation of every pattern in these files.
 
 ## Operational realities
 
