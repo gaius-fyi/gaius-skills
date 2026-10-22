@@ -72,8 +72,9 @@ Predictions are structured objects, not opaque scores:
 - `extras` — observed tokens the pattern did not expect.
 - `confidence` — 0 to 1: the share of the symbols in the pattern's aligned events that
   were observed. A match-completeness score, not a probability of being right.
-- `potential` — the engine's ranking score. Predictions come back ordered by it, highest
-  first. It is not a probability of being right.
+- `potential` — The engine's ranking score, between 0 and 4: higher ranks first. Compare it
+  only with the other predictions in the same response; it is not a probability of being
+  right.
 - `frequency` — how many times this exact pattern has been learned.
 - Several other metrics ride along with each prediction.
 
@@ -133,8 +134,6 @@ A separate tier, ThinkFlux, adds planning and concept discovery. [Contact us to 
   symbols — bucket the gap and observe it as an event token (`"GAP|SHORT"`,
   `"GAP|OVERNIGHT"`). Time-dependence that isn't encoded this way is invisible to the
   engine.
-- **Emotives operate at the layer where they're observed** — they don't currently
-  propagate up through abstraction layers.
 - **Isolation is architectural.** Clients of one node share its memory; multi-tenant
   designs use separate nodes or instances per tenant.
 - **Topology is set at startup.** Nodes and wiring come from the genome file; plan the
