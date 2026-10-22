@@ -46,7 +46,8 @@ or invoke it directly: `/gaius-fit-check:gaius-fit-check` (plugin install) or
 
 - Runs inside your existing Claude Code session, so it's meant for repos where you
   already use Claude Code. It sends nothing to us, and nothing beyond what your Claude
-  Code session already sends to Anthropic.
+  Code session already sends to Anthropic, or to the cloud provider your organization
+  runs Claude through.
 - If your code is controlled (for example CUI or export-controlled), run it only where
   your organization's Claude arrangement is approved for that code.
 - The skill is four Markdown files (plus a JSON plugin manifest): no scripts, no
