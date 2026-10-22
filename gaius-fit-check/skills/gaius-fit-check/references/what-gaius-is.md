@@ -16,8 +16,9 @@ Three operations, called through a Python SDK or REST API:
    memory (WM)** in the order observed.
 2. **Learn** — commit the sequence currently in working memory to the **knowledge base
    (KB)** as a stored pattern. One call; the pattern is usable on the very next
-   prediction. Learning a pattern never modifies any other stored pattern. It does update
-   KB-wide symbol statistics, which feed the ranking score, so the order of other
+   prediction. Learning stores a new pattern without changing any other pattern's
+   sequence; learning an identical sequence again adds to that pattern's count. It does
+   update KB-wide symbol statistics, which feed the ranking score, so the order of other
    predictions can shift.
 3. **Predict** — given the events currently in working memory, the engine matches them
    against stored patterns and returns ranked predictions. Every learned pattern reads in
@@ -37,11 +38,11 @@ Every observed event is a small JSON structure with four channels:
   represented by the stored vectors nearest to it, so nearby vectors share those and
   partially match. The engine does not build per-class averages or prototypes (an
   optional hyperclustering mode, off by default, can replace stored vectors with
-  clusters). The primary channel for numeric data — the engine's benchmark-winning
+  clusters). The primary channel for numeric data — the engine's benchmarked
   classification results run on vectors (see fit-patterns.md).
-- `emotives` — named scalar signals (utility, risk, cost) attached to the event. They
-  mix into predictions, which enables utility-weighted prediction and recommendation-style
-  ranking.
+- `emotives` — named scalar signals (utility, risk, cost) attached to an event, learned
+  with the pattern and reported as an average on each prediction. They do not affect the
+  engine's ranking; your application can re-rank or filter predictions by them.
 - `metadata` — arbitrary context stored with the event but **never pattern-matched**.
   This is where identifiers (IDs, IPs, timestamps, names) belong, so they don't pollute
   learning.
@@ -69,11 +70,10 @@ Predictions are structured objects, not opaque scores:
 - `matches` — which observed tokens matched the stored pattern.
 - `missing` — tokens the pattern expected that were not observed.
 - `extras` — observed tokens the pattern did not expect.
-- `confidence` — match completeness: how much of the matched pattern the observed events
-  contain (0–1). It is not a probability of being right.
-- `potential` — the ranking score. Predictions come back ordered by it, highest first. It
-  combines how much of the pattern matched, how cleanly, and how distinctive the pattern
-  is. It has no fixed scale and is not a probability of being right.
+- `confidence` — 0 to 1: the share of the symbols in the pattern's aligned events that
+  were observed. A match-completeness score, not a probability of being right.
+- `potential` — the engine's ranking score. Predictions come back ordered by it, highest
+  first. It is not a probability of being right.
 - `frequency` — how many times this exact pattern has been learned.
 - Several other metrics ride along with each prediction.
 
@@ -94,8 +94,8 @@ supports operations that a weight-based model cannot do directly:
 - Delete one bad pattern without modifying any other pattern and without retraining.
 - Correct or inject patterns programmatically.
 - Blacklist noisy symbols so they stop entering working memory.
-- Export the entire KB to a file and restore it elsewhere. Restoring replaces the target
-  processor's entire KB; export it first.
+- Export the entire KB to a file and load it into another processor. Loading replaces the
+  target processor's entire KB; export it first.
 
 This matters for data governance (remove a specific learned fact on request), for
 debugging (find exactly which learned pattern caused a wrong prediction and remove it),
@@ -112,11 +112,8 @@ without restarting or retraining. The two you'll touch most:
 
 ## Topologies: patterns of patterns
 
-An agent can run multiple processing nodes wired together. In a layered topology, a
-higher node learns patterns over a lower node's *prediction outputs* — e.g. a lower node
-classifies individual events into stages, and a higher node learns the sequence of stages
-and predicts which stage comes next. This is the engine's strongest shipped pattern — a
-deployed security-monitoring integration uses it for multi-step progression prediction.
+An agent can run multiple processing nodes wired together. Nodes can be stacked into
+layered topologies.
 
 Honest caveat: tokens at higher layers are machine-generated identifiers. Decoding what a
 higher-layer pattern *means* requires a back-tracing step through the SDK, not just a

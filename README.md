@@ -1,4 +1,4 @@
-# Gaius Skills
+# GAIuS Skills
 
 Claude Code skills from the [GAIuS](https://www.gaius.fyi) team.
 
@@ -50,9 +50,9 @@ or invoke it directly: `/gaius-fit-check:gaius-fit-check` (plugin install) or
   runs Claude through.
 - If your code is controlled (for example CUI or export-controlled), run it only where
   your organization's Claude arrangement is approved for that code.
-- The skill is four Markdown files (plus a JSON plugin manifest): no scripts, no
+- The skill is four Markdown files (plus two small JSON plugin manifests): no scripts, no
   binaries, nothing that executes. It never sends anything on your behalf; if there's a
   fit, it drafts a message for you to send yourself.
-- Grounds every claim in its bundled reference material — it will say "I don't know"
-  rather than invent a capability.
+- It is instructed to ground every claim about GAIuS in its bundled reference files, and
+  to say so when a question falls outside them instead of inventing a capability.
 - A clear "not a fit, because X" is a supported outcome. The honesty is the point.

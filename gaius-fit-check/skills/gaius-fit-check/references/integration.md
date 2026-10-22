@@ -101,7 +101,8 @@ couple of weeks, iterating against prediction quality.
 - **Latency**: `observe` is the dominant cost, and it grows with KB size, somewhat less
   than linearly. In our single-run measurements: about 4 ms per `observe` on a 25-pattern
   KB and about 0.6 s on a real, vector-heavy 18,876-pattern KB (Apple M1 laptop, arm64
-  Linux containers); on a 6-core x86_64 desktop with a different 20,444-pattern KB, a
+  Linux containers); on an x86_64 desktop limited to 6 hardware threads (3 cores), with a
+  different 20,444-pattern KB, a
   median of about 0.2 s for `observe` plus prediction retrieval. Pattern search runs in
   parallel across cores. Measure on your own hardware and data before sizing throughput.
   Cost is flat in event width and in working-memory depth. The engine is CPU-bound and

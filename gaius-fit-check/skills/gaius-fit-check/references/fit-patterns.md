@@ -8,10 +8,10 @@ The single question that predicts fit better than any other:
 
 ## The headline result: benchmarked data efficiency
 
-On the UCI Human Activity Recognition benchmark (561 smartphone-sensor features, 6
-activities), a GAIuS classification architecture — built entirely with standard SDK calls,
-CPU-only, no GPU — was benchmarked head-to-head against RandomForest, KNN, and XGBoost
-on **identical features, identical train/test splits, 3 seeds**:
+On the UCI Human Activity Recognition benchmark (6 activities), a five-node GAIuS agent (a
+specialist configuration) — built with standard SDK calls, CPU-only, no GPU — was
+benchmarked head-to-head against RandomForest, KNN, and XGBoost on **the same 150
+features, identical train/test splits, 3 seeds**:
 
 | Training data     | GAIuS     | XGBoost | RandomForest | KNN   |
 |-------------------|-----------|---------|--------------|-------|
@@ -20,18 +20,19 @@ on **identical features, identical train/test splits, 3 seeds**:
 | 40% (2,907)       | **92.4%** | 91.3%   | 88.6%        | 88.3% |
 | 100% (7,268)      | **92.4%** | 91.0%   | 88.7%        | 88.6% |
 
-These GAIuS figures are from a specialist-routed configuration, built with standard SDK
-calls. A single-processor configuration scores 87-88% on the same splits.
+Every method was given the same 150 features, chosen by a random-forest ranking. Routing
+between the GAIuS nodes ran in the test harness, and a single node scores 87–88%.
 
 Two things to notice:
 
-- **GAIuS wins at every training size** — best overall accuracy 92.4%.
+- **On the same features and splits, GAIuS beat XGBoost, RandomForest and KNN at every
+  training size** — 92.4% with all the training data (mean of three seeds).
 - **GAIuS with 10% of the data (91.7%) beats every baseline trained on 100% of it.**
   It reaches within a point of its own ceiling from 726 examples.
 
-(Honest footnote: heavyweight deep-learning models can score higher on this benchmark —
-with GPUs, training runs, and none of the explainability. Against the classical ML a
-production team would actually reach for, GAIuS won outright.)
+(Footnote: heavyweight deep-learning models — and classical models given all 2,805
+features — can score higher on this benchmark. With all 2,805 features, XGBoost scores
+95.05% and RandomForest 93.3%. The comparison above holds at the same 150 features.)
 
 The architecture behind the number is itself a selling point: it was built entirely with
 application-level code on the public SDK — standard calls, no engine modifications, no
@@ -53,12 +54,8 @@ this is the fit.
 
 Workflows, protocol progressions, user journeys, alarm cascades, attack-stage sequences —
 anywhere events arrive in meaningful order and "what typically comes next?" changes what
-your system does. This is the engine's home turf and its strongest shipped pattern: in a
-deployed security-monitoring integration, a layered topology learned multi-step stage progressions and
-predicted the next stage of in-progress sequences on complete matches (confidence 1.0:
-every expected signal present) after seeing
-each pattern only a handful of times — and every prediction itemized which signals
-matched and what was expected next.
+your system does. This is the engine's home turf: every prediction itemizes which signals
+matched and what is expected next. Nodes can be stacked into layered topologies.
 
 ### 3. Backward reconstruction — inferring what led to a state
 
@@ -107,13 +104,12 @@ offline, with no cloud dependency. The HAR benchmark above ran CPU-only. If your
 deployment cannot ship data out or power a GPU, that narrows the field of alternatives
 considerably.
 
-### 8. Utility-weighted prediction and recommendations
+### 8. Predictions that carry utility, risk and cost
 
-Emotives attach scalar signals (utility, risk, cost) to events, and predictions carry
-them — so you can rank candidate futures by expected value, not just by how well they
-match. The
-prediction's `missing` field (expected-but-not-present) drives shipped
-recommendation-style use cases: "people in this pattern usually also have X."
+Emotives are named scalar signals (utility, risk, cost) attached to an event, learned with
+the pattern and reported as an average on each prediction. They do not affect the
+engine's ranking; your application can re-rank or filter predictions by them — for
+example, to rank candidate futures by expected value, not just by how well they match.
 
 ### 9. Deciding, not just predicting — planning and concept discovery
 
