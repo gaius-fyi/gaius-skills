@@ -1,9 +1,12 @@
 # What GAIuS Is
 
-GAIuS is a cognitive engine: it learns symbolic sequences from observation, predicts what
-comes next, and can explain every prediction it makes. It is not an LLM and not a neural
-network. There is no gradient training, no GPU, and no training/inference split — learning
-and predicting interleave continuously on CPU, in Docker, fully offline if needed.
+GAIuS is a cognitive engine: it learns sequences of events (symbolic tokens, numeric
+vectors, or both) from observation, predicts what comes next, and can explain every
+prediction it makes. It is not an LLM and not a neural network. There is no gradient
+training and no GPU. There is no separate training phase: learning and prediction work on
+the same live knowledge base, and the engine learns only when you call `learn` (or switch
+automatic learning on). It runs on CPU, in Docker, and is designed to run fully offline,
+with no cloud dependency.
 
 ## The core loop
 
@@ -12,14 +15,15 @@ Three operations, called through a Python SDK or REST API:
 1. **Observe** — feed the engine one event at a time. Events accumulate in **working
    memory (WM)** in the order observed.
 2. **Learn** — commit the sequence currently in working memory to the **knowledge base
-   (KB)** as a stored pattern. One call, immediate; the pattern is usable on the very next
-   prediction. There is no retraining cycle — learning one new pattern does not touch the
-   others.
+   (KB)** as a stored pattern. One call; the pattern is usable on the very next
+   prediction. Learning a pattern never modifies any other stored pattern. It does update
+   KB-wide symbol statistics, which feed the ranking score, so the order of other
+   predictions can shift.
 3. **Predict** — given the events currently in working memory, the engine matches them
    against stored patterns and returns ranked predictions. Every learned pattern reads in
    both directions: **forward** to what comes next, and **backward** to what led here —
-   no separate reverse model, nothing trained backward. Reveal any part of a process and
-   the engine reconstructs the rest either way.
+   no separate reverse model, nothing trained backward. Reveal part of a process and the
+   engine can reconstruct the rest in either direction.
 
 ## The data format (GDF)
 
@@ -45,8 +49,8 @@ Every observed event is a small JSON structure with four channels:
 **Combining channels:** both are first-class, and one event can carry both — with one
 rule to know: choose the primary channel by where the signal lives, and mix only when
 each channel adds *different* information. Symbolic tasks gain from adding a small
-supporting vector of numeric context (proven in production — it lets near-miss numeric
-context partially match). Vector tasks should keep `strings` empty rather than restating
+supporting vector of numeric context (used in a deployed security-monitoring
+integration — it lets near-miss numeric context partially match). Vector tasks should keep `strings` empty rather than restating
 the numbers as coarse tokens — duplicating a precise vector as blurry symbols costs
 accuracy.
 
@@ -84,13 +88,14 @@ post-hoc approximation.
 ## The knowledge base is editable
 
 Because knowledge is stored as discrete patterns rather than distributed weights, the KB
-supports surgical operations no gradient-trained model can offer:
+supports operations that a weight-based model cannot do directly:
 
 - Inspect any pattern; search patterns by the symbols they contain.
-- Delete one bad pattern without touching anything else and without retraining.
+- Delete one bad pattern without modifying any other pattern and without retraining.
 - Correct or inject patterns programmatically.
-- Blacklist noisy symbols so they never enter working memory again.
-- Export the entire KB to a file and restore it elsewhere.
+- Blacklist noisy symbols so they stop entering working memory.
+- Export the entire KB to a file and restore it elsewhere. Restoring replaces the target
+  processor's entire KB; export it first.
 
 This matters for data governance (remove a specific learned fact on request), for
 debugging (find exactly which learned pattern caused a wrong prediction and remove it),
@@ -110,8 +115,8 @@ without restarting or retraining. The two you'll touch most:
 An agent can run multiple processing nodes wired together. In a layered topology, a
 higher node learns patterns over a lower node's *prediction outputs* — e.g. a lower node
 classifies individual events into stages, and a higher node learns the sequence of stages
-and predicts which stage comes next. This is the engine's strongest shipped pattern —
-production deployments use it for multi-step progression prediction.
+and predicts which stage comes next. This is the engine's strongest shipped pattern — a
+deployed security-monitoring integration uses it for multi-step progression prediction.
 
 Honest caveat: tokens at higher layers are machine-generated identifiers. Decoding what a
 higher-layer pattern *means* requires a back-tracing step through the SDK, not just a
@@ -154,7 +159,7 @@ applied planning scenario. If the developer's need is "decide what to do," not j
 
 ## Deployment shape
 
-Docker Compose stack (engine nodes plus API server), driven by a
-Python SDK (`ia-sdk`) or plain REST. CPU-only. Runs on a laptop, a server, or an
-air-gapped network. Commercially licensed — deployment and licensing details come from a
+Docker Compose stack (engine nodes plus API server), driven by the
+GAIuS Python SDK or plain REST. CPU-only. Designed to run on a laptop, a server, or
+an air-gapped network. Commercially licensed — deployment and licensing details come from a
 conversation, not this document.

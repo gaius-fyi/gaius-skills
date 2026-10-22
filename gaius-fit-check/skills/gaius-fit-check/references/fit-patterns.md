@@ -3,8 +3,8 @@
 The single question that predicts fit better than any other:
 
 > **Does your system produce events, situations, or feature snapshots that recur in a
-> recognizable way?** If yes, GAIuS can learn them — from remarkably few examples — and
-> tell you exactly why it predicted what it predicted.
+> recognizable way?** If yes, GAIuS can learn them and tell you exactly why it predicted
+> what it predicted.
 
 ## The headline result: benchmarked data efficiency
 
@@ -20,12 +20,14 @@ on **identical features, identical train/test splits, 3 seeds**:
 | 40% (2,907)       | **92.4%** | 91.3%   | 88.6%        | 88.3% |
 | 100% (7,268)      | **92.4%** | 91.0%   | 88.7%        | 88.6% |
 
+These GAIuS figures are from a specialist-routed configuration, built with standard SDK
+calls. A single-processor configuration scores 87-88% on the same splits.
+
 Two things to notice:
 
 - **GAIuS wins at every training size** — best overall accuracy 92.4%.
 - **GAIuS with 10% of the data (91.7%) beats every baseline trained on 100% of it.**
-  It reaches within a point of its own ceiling from 726 examples, because it learns each
-  pattern from a single exposure rather than fitting a statistical surface.
+  It reaches within a point of its own ceiling from 726 examples.
 
 (Honest footnote: heavyweight deep-learning models can score higher on this benchmark —
 with GPUs, training runs, and none of the explainability. Against the classical ML a
@@ -33,7 +35,7 @@ production team would actually reach for, GAIuS won outright.)
 
 The architecture behind the number is itself a selling point: it was built entirely with
 application-level code on the public SDK — standard calls, no engine modifications, no
-GPU — and the approach transfers to other classification tasks.
+GPU. The same observe-then-label pattern drives the digit demo below.
 
 ---
 
@@ -45,14 +47,14 @@ No minimum dataset size, no training run, no convergence. A pattern observed onc
 usable on the next prediction. The table above is the proof: near-ceiling accuracy from
 hundreds of examples, not thousands. If your reality is "we have dozens or hundreds of
 labeled examples, not millions" — new product, rare events, expensive labels, cold-start —
-this inverts the usual ML calculus, and it's where conventional models are weakest.
+this is the fit.
 
 ### 2. Next-event prediction over event streams
 
 Workflows, protocol progressions, user journeys, alarm cascades, attack-stage sequences —
 anywhere events arrive in meaningful order and "what typically comes next?" changes what
 your system does. This is the engine's home turf and its strongest shipped pattern: in a
-production integration, a layered topology learned multi-step stage progressions and
+deployed security-monitoring integration, a layered topology learned multi-step stage progressions and
 predicted the next stage of in-progress sequences on complete matches (confidence 1.0:
 every expected signal present) after seeing
 each pattern only a handful of times — and every prediction itemized which signals
@@ -60,11 +62,11 @@ matched and what was expected next.
 
 ### 3. Backward reconstruction — inferring what led to a state
 
-The same capability as next-event prediction, aimed the other way, and it's one no
-autoregressive model (LLM, RNN, forecaster) can match: those run forward only, so to go
-backward you'd train a second model on reversed data. In GAIuS, "what comes next" and
-"what led here" come from the same learned pattern — the `past` field falls out for
-free, no second model. This is the shape of a whole class of
+The same capability as next-event prediction, aimed the other way. A forward-only
+predictor (an autoregressive language model, a next-step forecaster) would need a second
+model trained on reversed data to do this. In GAIuS, "what comes next" and "what led here"
+come from the same learned pattern: the `past` field comes with every prediction. This is
+the shape of a whole class of
 problems: **incident and root-cause forensics** (you're paged at the failure, not the
 trigger — reconstruct the sequence that produced it), **audit and compliance** (given the
 outcome, which steps *should* have happened? a skipped step surfaces directly in the
@@ -78,8 +80,9 @@ Feature-event → label-event, learn, predict. The HAR result above is this
 pattern on numeric sensor vectors; a shipped image-digit demo does it on pixel vectors
 (96.7%, 348 of 360 held-out handwritten digits, learned from 1,437 examples, each stored
 as its own pattern and matched individually rather than averaged into class shapes);
-production integrations do it on symbolic event tokens. Works from the first labeled
-example, improves with each one, never needs a retrain to incorporate the next.
+a deployed security-monitoring integration does it on symbolic event tokens. Works from
+the first labeled example and incorporates each new example without a retraining run, as
+long as the representation stays the same (see integration.md, format stability).
 
 ### 5. Explainability and auditability as requirements
 
@@ -92,17 +95,17 @@ data governance and error correction without retraining anything.
 
 ### 6. Continuous learning in production
 
-Observe → learn → live. New patterns learned this minute predict this minute. Systems
+Observe → learn → live. A newly learned pattern is usable on the next prediction. Systems
 that must adapt — analyst feedback loops, evolving behavior, weekly-new patterns — get
 adaptation without a retrain-and-redeploy pipeline. You can also pre-seed: curate a
 starter knowledge base offline, ship it with the product, keep learning on top.
 
 ### 7. Edge, air-gapped, and CPU-only environments
 
-Everything above runs in Docker on commodity CPUs, fully offline. No GPU, no cloud API,
-no data leaving the premises. The HAR benchmark above ran on exactly this footprint. If
-your deployment can't ship data out or power a GPU, this constraint alone eliminates
-most alternatives.
+The engine runs in Docker on commodity CPUs with no GPU. It is designed to run fully
+offline, with no cloud dependency. The HAR benchmark above ran CPU-only. If your
+deployment cannot ship data out or power a GPU, that narrows the field of alternatives
+considerably.
 
 ### 8. Utility-weighted prediction and recommendations
 
@@ -135,8 +138,8 @@ A few clear no-gos, stated plainly.
   do semantic similarity. Pair it with an LLM if you need language; it won't replace one.
 - **Regressing continuous magnitudes.** Predicting exact prices, volumes, or sensor
   values is not the tool's shape. Reframing to discrete states (LOW/MED/HIGH regime,
-  RISING/FALLING trend) works well in practice — but if only the exact number will do,
-  use a regression model.
+  RISING/FALLING trend) is the way to use GAIuS here, when the decision only needs the
+  state — but if only the exact number will do, use a regression model.
 - **Raw perception at scale.** Real-world imagery, audio, video need a perception model
   in front; GAIuS then reasons over its symbolic outputs.
 - **Zero-engineering expectations.** GAIuS rewards representation work (see

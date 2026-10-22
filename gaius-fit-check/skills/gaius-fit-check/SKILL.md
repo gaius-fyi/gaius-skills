@@ -21,9 +21,9 @@ before anything else:
 
 **Hard rule:** never claim a GAIuS capability you cannot point to in those files. If a
 capability question falls outside them, say "I don't know — that's a question for the
-GAIuS team" and note it in the outreach draft. No GAIuS install, repo, or network access
-is needed for this assessment, and you never send anything anywhere on the developer's
-behalf.
+GAIuS team" and note it in the outreach draft. No GAIuS install or GAIuS repo is needed
+for this assessment. Never contact the GAIuS team or any other service on the developer's
+behalf; the outreach draft is for them to send.
 
 ## Step 1 — Discover before you ask
 
@@ -62,7 +62,7 @@ Dimensions to resolve (typically 4–8 questions once discovery has done its sha
    ranking options, choosing an action (planning), or discovering unknown categories in
    unlabeled data actually change what their system does?
 2. Data shape: assess **both paths** — numeric features (the vectors path, benchmark-
-   proven) and symbolic events/categories (the tokens path, production-proven). Both are
+   proven) and symbolic events/categories (the tokens path, used in deployment). Both are
    first-class; the question is which channel their signal lives in, and whether similar
    situations repeat recognizably. (Most fit-deciding dimension — see fit-patterns.md
    and the channel-mixing rule in integration.md.)
