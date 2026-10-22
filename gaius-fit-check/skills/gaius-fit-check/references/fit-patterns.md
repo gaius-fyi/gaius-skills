@@ -111,18 +111,7 @@ the pattern and reported as an average on each prediction. They do not affect th
 engine's ranking; your application can re-rank or filter predictions by them — for
 example, to rank candidate futures by expected value, not just by how well they match.
 
-### 9. Deciding, not just predicting — planning and concept discovery
-
-The ThinkFlux tier (see what-gaius-is.md) extends predictions into action: bootstrap the
-agent's learned patterns into named concepts, categorize new instances against them, and
-run goal-directed planning — assigning assets/actions to targets/goals with
-utility-weighted trade-offs — in a live observe → plan → act loop. It also does
-**unsupervised concept discovery**: given unlabeled observations, it clusters
-co-occurring symbols into concepts and generates hypotheses describing them. If the
-developer says "we don't even know what categories exist in our data" or "we need the
-system to choose an action, not just forecast," this is the fit — it's the deepest part
-of the shipped tutorial curriculum (8 of 19 tutorials, ending in an applied planning
-scenario).
+A separate tier, ThinkFlux, adds planning and concept discovery. [Contact us to learn more](https://www.gaius.fyi/about#contact).
 
 ---
 
@@ -148,7 +137,7 @@ A few clear no-gos, stated plainly.
 ## Calibration notes for the assessor
 
 - Lead with the opportunities. Find where the developer's system produces recurring
-  events or scarce-labeled decisions, and map those to patterns 1–9 with the concrete
+  events or scarce-labeled decisions, and map those to patterns 1–8 with the concrete
   gain spelled out.
 - Ground every claim in this file or its siblings; quote the benchmark numbers as
   stated — caveats included.

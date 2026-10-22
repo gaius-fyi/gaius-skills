@@ -59,8 +59,7 @@ Dimensions to resolve (typically 4–8 questions once discovery has done its sha
 
 1. The decision points: where would predicting the next event, reconstructing what led to
    a state (backward inference — root-cause, audit, gap-filling), classifying a situation,
-   ranking options, choosing an action (planning), or discovering unknown categories in
-   unlabeled data actually change what their system does?
+   or ranking options actually change what their system does?
 2. Data shape: assess **both paths** — numeric features (the vectors path, benchmark-
    proven) and symbolic events/categories (the tokens path, used in deployment). Both are
    first-class; the question is which channel their signal lives in, and whether similar

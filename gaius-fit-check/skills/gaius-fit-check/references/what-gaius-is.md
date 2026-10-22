@@ -119,23 +119,9 @@ Honest caveat: tokens at higher layers are machine-generated identifiers. Decodi
 higher-layer pattern *means* requires a back-tracing step through the SDK, not just a
 glance. Explainability is built-in but at higher layers it takes work.
 
-## The reasoning tier above: ThinkFlux
+## ThinkFlux
 
-ThinkFlux is an orchestration layer that sits on top of GAIuS agents and turns learned
-patterns into higher-level reasoning:
-
-- **Concept bootstrapping** — automatically distill the patterns an agent has learned
-  into named concepts usable for categorizing new instances and matching rules.
-- **Unsupervised concept discovery** — find the categories in *unlabeled* data and
-  generate hypotheses (discrete values and numeric ranges) describing each discovered
-  concept. Use it when you don't yet know what kinds of things exist in your data.
-- **Goal-directed planning** — assign assets to targets / actions to goals over those
-  concepts, with mood-weighted emotive signals (utility, risk) steering the decisions,
-  and a live loop of observe → plan → act.
-
-This tier is covered by eight of the nineteen shipped tutorials, culminating in an
-applied planning scenario. If the developer's need is "decide what to do," not just
-"predict what's next," this is the relevant surface.
+A separate tier, ThinkFlux, adds planning and concept discovery. [Contact us to learn more](https://www.gaius.fyi/about#contact).
 
 ## Boundaries to respect
 
