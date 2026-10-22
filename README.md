@@ -44,7 +44,14 @@ or invoke it directly: `/gaius-fit-check:gaius-fit-check` (plugin install) or
 
 ### What it will and won't do
 
-- Reads only your local project; makes no network calls and sends nothing anywhere.
+- Runs inside your existing Claude Code session, so it's meant for repos where you
+  already use Claude Code. It sends nothing to us, and nothing beyond what your Claude
+  Code session already sends to Anthropic.
+- If your code is controlled (for example CUI or export-controlled), run it only where
+  your organization's Claude arrangement is approved for that code.
+- The skill is four Markdown files (plus a JSON plugin manifest): no scripts, no
+  binaries, nothing that executes. It never sends anything on your behalf; if there's a
+  fit, it drafts a message for you to send yourself.
 - Grounds every claim in its bundled reference material — it will say "I don't know"
   rather than invent a capability.
 - A clear "not a fit, because X" is a supported outcome. The honesty is the point.
