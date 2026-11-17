@@ -6,33 +6,36 @@ The single question that predicts fit better than any other:
 > recognizable way?** If yes, GAIuS can learn them and tell you exactly why it predicted
 > what it predicted.
 
-## The headline result: benchmarked data efficiency
+## The headline result: benchmarked accuracy
 
 On the UCI Human Activity Recognition benchmark (6 activities), a five-node GAIuS agent (a
-specialist configuration) — built with standard SDK calls, CPU-only, no GPU — was
-benchmarked head-to-head against RandomForest, KNN, and XGBoost on **the same 150
-features, identical train/test splits, 3 seeds**:
+specialist configuration) — built with standard SDK calls, CPU-only, no GPU — scored
+**92.4%** (mean of three seeds) on the official test split. Every method was given **the
+same 150 features**, chosen by a random-forest ranking, and the same train/test split:
 
-| Training data     | GAIuS     | XGBoost | RandomForest | KNN   |
-|-------------------|-----------|---------|--------------|-------|
-| 10% (726 samples) | **91.7%** | 88.4%   | 88.2%        | 87.8% |
-| 20% (1,453)       | **92.2%** | 90.5%   | 89.0%        | 87.9% |
-| 40% (2,907)       | **92.4%** | 91.3%   | 88.6%        | 88.3% |
-| 100% (7,268)      | **92.4%** | 91.0%   | 88.7%        | 88.6% |
+| Method                 | Accuracy  |
+|------------------------|-----------|
+| GAIuS (5 nodes)        | **92.4%** |
+| LogisticRegression     | 91.2%     |
+| GradientBoosting       | 91.2%     |
+| XGBoost                | 91.1%     |
+| SVM (RBF)              | 91.0%     |
+| LightGBM               | 90.3%     |
+| MLP                    | 89.6%     |
+| KNN (k=10)             | 88.9%     |
+| RandomForest           | 88.7%     |
+| KNN (k=5)              | 88.6%     |
 
-Every method was given the same 150 features, chosen by a random-forest ranking. Routing
-between the GAIuS nodes ran in the test harness, and a single node scores 87–88%.
+Caveats, to quote along with the number:
 
-Two things to notice:
-
-- **On the same features and splits, GAIuS beat XGBoost, RandomForest and KNN at every
-  training size** — 92.4% with all the training data (mean of three seeds).
-- **GAIuS with 10% of the data (91.7%) beats every baseline trained on 100% of it.**
-  It reaches within a point of its own ceiling from 726 examples.
-
-(Footnote: heavyweight deep-learning models — and classical models given all 2,805
-features — can score higher on this benchmark. With all 2,805 features, XGBoost scores
-95.05% and RandomForest 93.3%. The comparison above holds at the same 150 features.)
+- Routing between the GAIuS nodes ran in the test harness, and a single node scores 87–88%.
+- The configuration was tuned against the published test split, with no separate
+  validation set.
+- Given all 2,805 features instead of 150, classical models score higher: XGBoost 95.05%,
+  RandomForest 93.3%. The ranking above holds only at the same 150 features.
+- **Do not claim data efficiency** (high accuracy from a small fraction of the training
+  data). The benchmark does not support it: on equal training data, a single GAIuS node
+  scores below XGBoost at every training size tested.
 
 The architecture behind the number is itself a selling point: it was built entirely with
 application-level code on the public SDK — standard calls, no engine modifications, no
@@ -42,13 +45,14 @@ GPU. The same observe-then-label pattern drives the digit demo below.
 
 ## Strong-fit patterns
 
-### 1. Learning from scarce data — the signature strength
+### 1. Learning without a training run
 
 No minimum dataset size, no training run, no convergence. A pattern observed once is
-usable on the next prediction. The table above is the proof: near-ceiling accuracy from
-hundreds of examples, not thousands. If your reality is "we have dozens or hundreds of
-labeled examples, not millions" — new product, rare events, expensive labels, cold-start —
-this is the fit.
+usable on the next prediction. This is about *when* knowledge becomes usable, not about
+accuracy from few examples: the benchmark above does not show GAIuS reaching higher
+accuracy than standard models on less data. If your reality is "new labeled examples keep
+arriving and must count immediately, without a retrain" — cold-start, rare events,
+analyst feedback — this is the fit.
 
 ### 2. Next-event prediction over event streams
 
@@ -137,7 +141,7 @@ A few clear no-gos, stated plainly.
 ## Calibration notes for the assessor
 
 - Lead with the opportunities. Find where the developer's system produces recurring
-  events or scarce-labeled decisions, and map those to patterns 1–8 with the concrete
+  events or decisions where new labels must count immediately, and map those to patterns 1–8 with the concrete
   gain spelled out.
 - Ground every claim in this file or its siblings; quote the benchmark numbers as
   stated — caveats included.
